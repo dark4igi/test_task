@@ -1,0 +1,44 @@
+aws cloudformation create-stack --stack-name myteststack --template-body file://vpc.yaml --parameters ParameterKey=EnvironmentName,ParameterValue=TestKey
+
+
+curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+chmod +x kops-linux-amd64
+sudo mv kops-linux-amd64 /usr/local/bin/kops
+
+aws iam create-group --group-name kops
+
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name kops
+
+aws iam add-user-to-group --user-name cloud_user --group-name kops
+
+#domain = cmcloudlab353.info
+
+aws s3api create-bucket --bucket igi-com-state-store --region us-east-1
+
+aws s3api put-bucket-versioning --bucket igi-com-state-store  --versioning-configuration Status=Enabled
+
+aws s3api put-bucket-encryption --bucket igi-com-state-store --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
+
+
+export NAME=myfirstcluster.cmcloudlab353.info
+export KOPS_STATE_STORE=s3://igi-com-state-store
+
+ssh-keygen
+
+aws ec2 describe-availability-zones --region us-west-2
+
+kops create cluster --zones=us-west-2a ${NAME}
+
+export EDITOR=vim
+
+kops update cluster --name ${NAME} --yes
+
+
+sudo usermod -aG docker $USER
+aws ecr get-login --region us-west-2 | sed -e "s/-e none //ig" | xargs  xargs # all servers
+
+kubectl create -f {deployment/service}
