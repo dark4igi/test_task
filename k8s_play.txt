@@ -1,0 +1,22 @@
+#k8s 
+
+cat << EOF | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+EOF
+
+kubectl get pods
+
+kubectl get pods -n kube-system
+
+kubectl describe pod nginx
+
+kubectl delete pod nginx
+
+
