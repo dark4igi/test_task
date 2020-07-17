@@ -15,7 +15,7 @@ aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAc
 
 aws iam add-user-to-group --user-name cloud_user --group-name kops
 
-#domain = cmcloudlab353.info
+#domain = cmcloudlab883.info
 
 aws s3api create-bucket --bucket igi-com-state-store --region us-east-1
 
@@ -24,7 +24,7 @@ aws s3api put-bucket-versioning --bucket igi-com-state-store  --versioning-confi
 aws s3api put-bucket-encryption --bucket igi-com-state-store --server-side-encryption-configuration '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
 
 
-export NAME=myfirstcluster.cmcloudlab353.info
+export NAME=myfirstcluster.cmcloudlab883.info
 export KOPS_STATE_STORE=s3://igi-com-state-store
 
 ssh-keygen
@@ -35,7 +35,22 @@ kops create cluster --zones=us-west-2a ${NAME}
 
 export EDITOR=vim
 
+Suggestions:
+ * list clusters with: kops get cluster
+ * edit this cluster with: kops edit cluster myfirstcluster.cmcloudlab883.info
+ * edit your node instance group: kops edit ig --name=myfirstcluster.cmcloudlab883.info nodes
+ * edit your master instance group: kops edit ig --name=myfirstcluster.cmcloudlab883.info master-us-west-2a
+
+Finally configure your cluster with: kops update cluster --name ${NAME} --yes
+
 kops update cluster --name ${NAME} --yes
+
+Suggestions:
+ * validate cluster: kops validate cluster
+ * list nodes: kubectl get nodes --show-labels
+ * ssh to the master: ssh -i ~/.ssh/id_rsa admin@api.myfirstcluster.cmcloudlab883.info
+ * the admin user is specific to Debian. If not using Debian please use the appropriate user based on your OS.
+ * read about installing addons at: https://github.com/kubernetes/kops/blob/master/docs/operations/addons.md.
 
 
 sudo usermod -aG docker $USER

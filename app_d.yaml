@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: 705076103456.dkr.ecr.us-west-2.amazonaws.com/my-app:latest
+        image: 396895338686.dkr.ecr.us-west-2.amazonaws.com/my-app
         ports:
         - containerPort: 3000
